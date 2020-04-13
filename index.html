@@ -60,9 +60,10 @@
     <div class="container">
       <article id="stats" class="message is-primary">
         <div class="message-header">
-          <p class="has-text-centered"><span class="icon"><i class="fas fa-table"></i></span><span>Statistics</span></p>
+          <p class="has-text-centered"><span class="icon"><i class="fas fa-table"></i></span><span>Statistics</span>
+            (Updated at: <span id="patientstats_updated"></span>)</p>
           <p>
-            <button onclick="javascript:loadData(false)" class="button">
+            <button onclick="javascript:loadStats()" class="button">
               <span class="icon is-small">
                 <i class="fas fa-sync"></i>
               </span>
@@ -75,13 +76,10 @@
               </span>
               <span>Share</span>
             </button>
-
-
         </div>
 
 
         <div class="message-body">
-
           <div class="columns is-multiline">
             <div class="column is-half-tablet is-one-quarter-desktop">
               <div class="tile is-parent">
@@ -91,7 +89,7 @@
 
                     <p><i class="fas fa-users"></i>
                       <span class="count-head">TOTAL</span>
-                      <span id="cases_total" class="count-num">xxx</span>
+                      <span id="cases_total" class="count-num"></span>
                     </p>
                     <p>
                       <span class="count-head-daily">New: </span>
@@ -113,7 +111,7 @@
                       <i class="fas fa-heart"></i>
                       <span class="count-head">Recovered</span>
 
-                      <span id="cases_recovered" class="count-num">xxx</span>
+                      <span id="cases_recovered" class="count-num"></span>
 
 
                     </p>
@@ -137,7 +135,7 @@
                       <i class="fas fa-bed"></i>
                       <span class="count-head">Active</span>
 
-                      <span id="cases_active" class="count-num">xxx</span>
+                      <span id="cases_active" class="count-num"></span>
 
 
                     </p>
@@ -161,7 +159,7 @@
                       <i class="fas fa-ambulance"></i>
                       <span class="count-head">Death</span>
 
-                      <span id="cases_deaths" class="count-num">xxx</span>
+                      <span id="cases_deaths" class="count-num"></span>
 
 
                     </p>
@@ -183,84 +181,156 @@
     </div>
     </article>
     <br>
+    <div class="container">
+      <article id="samplestats" class="message is-info">
+        <div class="message-header">
+          <p class="has-text-centered"><span class="icon"><i class="fas fa-table"></i></span><span>Sample
+              Statistics</span> (Based on Official Media Bulletin, dated: <span id="stats_date"></span>)</p>
 
-    <article>
-        <div class="container">
-            <div class="message-header">
-                <p><span class="icon"><i class="fas fa-virus"></i></span><span>Active Cases Heat Map</span></p>
-              </div>
-              <div class="message-body">
-                  <div class="columns">
-                      <div class=" column is-half">
-                        <div id="map-container">
-    
-                        </div>
-                        <div class="legend is-mobile">
-                          <svg width="100%" height="50px" id="legend">
-                          </svg>
-                        </div>
-                        <br>
-                        <div style="display: block;margin: auto;" id="map">
-                        </div>
-                        <br />
-                        <div class="columns is-mobile is-multiline">
-                          <div class="column is-full">
-                            <h1 id="map-district_name" class="has-text-centered title is-size-3 is-size-4-mobile has-text-black">
-                              Total</h1>
-                          </div><br /><br /><br />
-                          <div class="column map-total">
-                            <h1 id="map-cases_total" class="has-text-centered has-text-danger">
-                              XXX</h1>
-                            <h1 class="has-text-centered title has-text-danger map-count-text">Total</h1>
-                          </div>
-                          <div class="column map-active">
-                            <h1 id="map-cases_active" class="has-text-centered has-text-info">
-                              XXX</h1>
-                            <h1 class="has-text-centered title map-count-text has-text-info">Active</h1>
-                          </div>
-                          <div class="column map-recovered">
-                            <h1 id="map-cases_recovered" class="has-text-centered has-text-success">XXX</h1>
-                            <h1 class="has-text-centered title map-count-text has-text-success">Recovered</h1>
-                          </div>
-                          <div class="column map-death">
-                            <h1 id="map-cases_deceased" class="has-text-centered has-text-grey-dark">XXX</h1>
-                            <h1 class="has-text-centered title map-count-text has-text-grey-dark">Deceased</h1>
-                          </div>
-              
-                        </div>
-                        <div>
-                          <h3 class="has-text-centered">Map Source: <a href="https://pib.gov.in/PressReleasePage.aspx?PRID=1590112"
-                              target="_blank">Map of UTs - pib.gov.in</a> (Click on the district to view stats).</h3>
-                          <h3 class="has-text-centered"><i><b>Note: </b></i>This includes information of only those patients whose
-                            district was confirmed</h3>
-                        </div>
-                      </div>
-                      <br>
-                        <div class="column is-half">
-                        <article>
-                          <div class="message-header">
-                            <p>District Data</p>
-                          </div>
-                          <div class="messasge-body">
-                              <div id="district-table">
-                                  <table class="table is-fullwidth is-bordered is-striped" data-sortable style="overflow-x:auto;">
-                                    <thead>
-                                      <tr>
-                                        <th>District</th>
-                                        <th>Total</th>
-                                        <th>Active</th>
-                                        <th>Recovered</th>
-                                        <th>Deceased</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                  </table>
-                                </div>
-                          </div>
-                        </article>
-                        </div>
+        </div>
+
+
+        <div class="message-body">
+          <div class="columns is-multiline">
+            <div class="column is-half-tablet is-one-third-desktop">
+              <div class="tile is-parent">
+                <article class="tile tile-samples is-child box">
+
+                  <div class="container-stat">
+
+                    <p><i class="fas fa-syringe"></i>
+                      <span class="count-head">Samples Collected</span>
+                      <span id="stats_samples" class="count-num">xxx</span>
+                    </p>
+                    <div id="slSamples" class="sparkline"></div>
                   </div>
+                </article>
+              </div>
+            </div>
+
+            <div class="column is-half-tablet is-one-third-desktop">
+              <div class="tile is-parent">
+                <article class="tile tile-posper is-child box">
+
+                  <div class="container-stat">
+                    <p>
+                      <i class="fas fa-lungs-virus"></i>
+                      <span class="count-head">Positive Percentage</span>
+
+                      <span id="stats_posper" class="count-num">xxx</span>
+
+
+                    </p>
+                    <div id="slPositivePercentage" class="sparkline"></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <div class="column is-half-tablet is-one-third-desktop">
+              <div class="tile is-parent">
+                <article class="tile tile-negper is-child box">
+
+                  <div class="container-stat">
+                    <p>
+                      <i class="fas fa-lungs"></i>
+                      <span class="count-head">Negative Percentage</span>
+
+                      <span id="stats_negper" class="count-num">xxx</span>
+
+
+                    </p>
+                    <div id="slNegativePercentage" class="sparkline"></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+          </div>
+          <br />
+        </div>
+    </div>
+    </article>
+    </div>
+    <br>
+    <article>
+      <div class="container">
+        <div class="message-header">
+          <p><span class="icon"><i class="fas fa-virus"></i></span><span>Active Cases Heat Map</span></p>
+        </div>
+        <div class="message-body">
+          <div class="columns">
+            <div class=" column is-half">
+              <div id="map-container">
+
+              </div>
+              <div class="legend is-mobile">
+                <svg width="100%" height="50px" id="legend">
+                </svg>
+              </div>
+              <br>
+              <div style="display: block;margin: auto;" id="map">
+              </div>
+              <br />
+              <div class="columns is-mobile is-multiline">
+                <div class="column is-full">
+                  <h1 id="map-district_name" class="has-text-centered title is-size-3 is-size-4-mobile has-text-black">
+                    Total</h1>
+                </div><br /><br /><br />
+                <div class="column map-total">
+                  <h1 id="map-cases_total" class="has-text-centered has-text-danger">
+                    XXX</h1>
+                  <h1 class="has-text-centered title has-text-danger map-count-text">Total</h1>
+                </div>
+                <div class="column map-active">
+                  <h1 id="map-cases_active" class="has-text-centered has-text-info">
+                    XXX</h1>
+                  <h1 class="has-text-centered title map-count-text has-text-info">Active</h1>
+                </div>
+                <div class="column map-recovered">
+                  <h1 id="map-cases_recovered" class="has-text-centered has-text-success">XXX</h1>
+                  <h1 class="has-text-centered title map-count-text has-text-success">Recovered</h1>
+                </div>
+                <div class="column map-death">
+                  <h1 id="map-cases_deceased" class="has-text-centered has-text-grey-dark">XXX</h1>
+                  <h1 class="has-text-centered title map-count-text has-text-grey-dark">Deceased</h1>
+                </div>
+
+              </div>
+              <div>
+                <h3 class="has-text-centered">Map Source: <a
+                    href="https://pib.gov.in/PressReleasePage.aspx?PRID=1590112" target="_blank">Map of UTs -
+                    pib.gov.in</a> (Click on the district to view stats).</h3>
+                <h3 class="has-text-centered"><i><b>Note: </b></i>This includes information of only those patients whose
+                  district was confirmed</h3>
+              </div>
+            </div>
+            <br>
+            <div class="column is-half">
+              <article>
+                <div class="message-header">
+                  <p>District Data</p>
+                </div>
+                <div class="messasge-body">
+                  <div class="table-container" id="district-table">
+                    <table class="table is-fullwidth is-bordered is-striped" data-sortable style="overflow-x:auto;">
+                      <thead>
+                        <tr>
+                          <th data-sortable="false">District</th>
+                          <th data-sortable-type="numeric">Total</th>
+                          <th data-sortable-type="numeric">Active</th>
+                          <th data-sortable-type="numeric">Recovered</th>
+                          <th data-sortable-type="numeric">Deceased</th>
+                          <th data-sortable-type="numeric">Cases per million</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
         </div>
     </article>
     <br>
@@ -291,18 +361,56 @@
 
     <article>
       <div class="container">
-        <div class="message-header">
-          <p>
-            NEWSFEED <span class="blink live-back">LIVE</span>
-          </p>
-        </div>
-        <div class="message-body">
-          <div id="news-parent">
+        
 
-            <div id="news-container" class="marquee columns is-mobile">
+          <div class="columns">
+
+            <div class="container column is-6 ">
+              <div class="message-header">
+                <p>
+                  Twitter Feed <span class="blink"><i class="fab fa-twitter"></i></span>
+                </p>
+              </div>
+
+              <div id="twitterfeed-container" class="message-body">
+
+
+              </div>
+            </div>
+
+            <div class="column is-6">
+
+              <div class="message-header">
+                <p>
+                  News Feed <span class="blink live-back">NOW</span>
+                </p>
+              </div>
+
+              <div class="message-body">
+
+                <!-- <div class="card news-feed-card">
+
+                  <div class="card-content">
+
+                    <div class="content">
+
+                      <h5 id="news-feed-headline">This is the news headline here.</h5>
+                      <p id="news-card-source"><span>Source: <strong><span class="has-text-primary">The Abcd
+                              News</span></span></strong>
+                        <br />
+                        <span class="has-text-link"><a href="#"><strong>Read Full</strong> </a></span>
+                      </p>
+
+                    </div>
+                  </div>
+                </div> -->
+                <h2 class="title has-text-centered">COMING SOON</h2>
+
 
             </div>
+
           </div>
+
         </div>
       </div>
 
@@ -513,65 +621,63 @@
 
   <hr />
   <!--India & World stats start-->
-  <div class="container">
+  <div id="extradata" class="container">
     <div class="tabs is-centered is-boxed is-medium">
       <ul>
-        <li class="tab" class="is-active" onclick="openTab(event,'indStats')">
-          <a>
-            <span>India</span>
-          </a>
+        <li class="tab is-active">
+          <a data-trigger="0">India</a>
         </li>
-        <li class="tab" onclick="openTab(event,'wStats')">
-          <a>
-            <span>World</span>
+        <li class="tab">
+          <a data-trigger="1">
+            World
           </a>
         </li>
       </ul>
     </div>
     <div class="section">
-        <div id="indStats" class="content-tab" >
-          <div class="columns is-mobile is-multiline">
-            
-            <div class="column map-total">
-              <h1 id="indTotal" class="has-text-centered has-text-danger">XXX</h1>
-              <h1 class="has-text-centered title has-text-danger map-count-text">Total</h1>
-            </div>
-            <div class="column map-active">
-              <h1 id="indActive" class="has-text-centered has-text-info">XXX</h1>
-              <h1 class="has-text-centered title map-count-text has-text-info">Active</h1>
-            </div>
-            <div class="column map-recovered">
-              <h1 id="indRecovered" class="has-text-centered has-text-success">XXX</h1>
-              <h1 class="has-text-centered title map-count-text has-text-success">Recovered</h1>
-            </div>
-            <div class="column map-death">
-              <h1 id="indDead" class="has-text-centered has-text-grey-dark">XXX</h1>
-              <h1 class="has-text-centered title map-count-text has-text-grey-dark">Deceased</h1>
-            </div>
-      
+      <div id="indStats" class="content-tab">
+        <div class="columns is-mobile is-multiline">
+
+          <div class="column map-total">
+            <h1 id="indTotal" class="has-text-centered has-text-danger">XXX</h1>
+            <h1 class="has-text-centered title has-text-danger map-count-text">Total</h1>
           </div>
+          <div class="column map-active">
+            <h1 id="indActive" class="has-text-centered has-text-info">XXX</h1>
+            <h1 class="has-text-centered title map-count-text has-text-info">Active</h1>
+          </div>
+          <div class="column map-recovered">
+            <h1 id="indRecovered" class="has-text-centered has-text-success">XXX</h1>
+            <h1 class="has-text-centered title map-count-text has-text-success">Recovered</h1>
+          </div>
+          <div class="column map-death">
+            <h1 id="indDead" class="has-text-centered has-text-grey-dark">XXX</h1>
+            <h1 class="has-text-centered title map-count-text has-text-grey-dark">Deceased</h1>
+          </div>
+
         </div>
-        <div id="wStats" class="content-tab" style="display:none">
-          <div class="columns is-mobile is-multiline">
-      
-            <div class="column map-total">
-              <h1 id="wTotal" class="has-text-centered has-text-danger">XXX</h1>
-              <h1 class="has-text-centered title has-text-danger map-count-text">Total</h1>
-            </div>
-            <!-- <div class="column map-active">
+      </div>
+      <div id="wStats" class="content-tab is-hidden" >
+        <div class="columns is-mobile is-multiline">
+
+          <div class="column map-total">
+            <h1 id="wTotal" class="has-text-centered has-text-danger">XXX</h1>
+            <h1 class="has-text-centered title has-text-danger map-count-text">Total</h1>
+          </div>
+          <!-- <div class="column map-active">
               <h1 id="indActive" class="has-text-centered has-text-info">XXX</h1>
               <h1 class="has-text-centered title map-count-text has-text-info">Active</h1>
             </div> -->
-            <div class="column map-recovered">
-              <h1 id="wRecovered" class="has-text-centered has-text-success">XXX</h1>
-              <h1 class="has-text-centered title map-count-text has-text-success">Recovered</h1>
-            </div>
-            <div class="column map-death">
-              <h1 id="wDead" class="has-text-centered has-text-grey-dark">XXX</h1>
-              <h1 class="has-text-centered title map-count-text has-text-grey-dark">Deceased</h1>
-            </div>
+          <div class="column map-recovered">
+            <h1 id="wRecovered" class="has-text-centered has-text-success">XXX</h1>
+            <h1 class="has-text-centered title map-count-text has-text-success">Recovered</h1>
+          </div>
+          <div class="column map-death">
+            <h1 id="wDead" class="has-text-centered has-text-grey-dark">XXX</h1>
+            <h1 class="has-text-centered title map-count-text has-text-grey-dark">Deceased</h1>
           </div>
         </div>
+      </div>
     </div>
   </div>
   <!--India & World stats start-->
@@ -625,7 +731,6 @@
   <script src="assets/js/index.js"></script>
   <script src="assets/js/localDebug.js"></script>
   <script src="assets/js/widgetFunction.js"></script>
-  <script src="assets/js/worldstats.js"></script>
 
   <!-- <script src="assets/js/newsFeed.js"></script> -->
 </body>

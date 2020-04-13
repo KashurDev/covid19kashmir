@@ -21,7 +21,7 @@ const FILTERS = {
 }
 
 
-const API_PROMISE = fetch(API_URL+"?fields=patientData,variance,districtMap,dailyMap").then((response) => {
+const API_PROMISE = fetch(API_URL+"?fields=patientData,variance,districtMap,dailyMap,samples,IndiaData,WorldData").then((response) => {
     return response.json()
 })
 const STATS_PROMISE = fetch(LIVE_API_URL).then((response) => {
@@ -31,16 +31,49 @@ const NEWS_PROMISE = fetch(NEWS_API_URL).then((response) => {
     return response.json()
 })
 
+const slBaseOptions = {
+    chart: {
+        type: 'line',
+        // width: 100,
+        height: 35,
+        sparkline: {
+            enabled: true
+        }
+    },
+    stroke:{
+        curve:"stepline",
+        lineCap: "round",
+        width: 3
+    },
+    tooltip: {
+        fixed: {
+            enabled: false
+        },
+        x: {
+            show: false
+        },
+        y: {
+            title: {
+                formatter: function (seriesName) {
+                    return ''
+                }
+            }
+        },
+        marker: {
+            show: false
+        }
+    }
+};
 $(document).ready(() => {
+    loadStats()
     API_PROMISE.then((data) => {
         patientData = data["patientData"];
         districtsMap = data["districtMap"];
         dailyMap = data["dailyMap"]
         loadSparklines(data["variance"]);
+        loadSamplesData(data["samples"])
+        loadExtraData([data["india"],data["world"]]);
         loadData(true);
-    })
-    STATS_PROMISE.then((data) => {
-        loadStats(data);
     })
     NEWS_PROMISE.then((data) => {
         loadNews(data);
@@ -48,23 +81,31 @@ $(document).ready(() => {
     $(".dropdown-trigger").click(function () {
         $(".dropdown").toggleClass("is-active");
     })
+
+    $("#extradata li").click(function(e){
+        $("#extradata li").toggleClass("is-active")
+        let t = e.target.dataset["trigger"]
+        if(t==0){
+            $("#indStats").removeClass("is-hidden")
+            $("#wStats").addClass("is-hidden")
+        }
+        else if(t==1){
+
+            $("#indStats").addClass("is-hidden")
+            $("#wStats").removeClass("is-hidden")
+        }
+    })
 })
 
 
 function loadData(first) {
 
-    if (first) progressBarVisible(true)
-    if (!first) {
-        $("#cases_total").html("");
-        $("#cases_active").html("")
-        $("#cases_deaths").html("")
-        $("#cases_recovered").html("")
-    }
-    if (first) loadTable();
-    if (first) loadDistricts();
-    if (first) loadFilters();
-    if (first) loadMap();
-    if (first) loadChart();
+    progressBarVisible(true)
+    loadTable();
+    loadDistricts();
+    loadFilters();
+    loadMap();
+    loadChart();
 }
 function loadDistricts(){
     $("#district-table tbody").html("")
@@ -77,6 +118,7 @@ function loadDistricts(){
                 <td class="has-text-centered">${dis[1]["Active"]}</td>
                 <td class="has-text-centered">${dis[1]["Recovered"]}</td>
                 <td class="has-text-centered">${dis[1]["Deceased"]}</td>
+                <td class="has-text-centered">${Math.round(1000000/(dis[1]["Population"]/dis[1]["Total"]))}</td>
             </tr>
         `)
     }
@@ -148,7 +190,19 @@ function formatSources(patient) {
     return sources.join(" ")
 }
 
-function loadStats(data) {
+function loadStats() {
+    $("#cases_total").html("");
+    $("#cases_active").html("");
+    $("#cases_deaths").html("");
+    $("#cases_recovered").html("");
+    $("#cases_total_today").html("");
+    $("#cases_active_today").html("");
+    $("#cases_deaths_today").html("");
+    $("#cases_recovered_today").html("");
+    $("#patientstats_updated").html("")
+    fetch(LIVE_API_URL).then((response) => {
+        return response.json()
+    }).then(data=>{
     $("#cases_total").html(data.Total);
     $("#cases_active").html(data.Active);
     $("#cases_deaths").html(data.Deceased);
@@ -157,19 +211,40 @@ function loadStats(data) {
     $("#cases_active_today").html((data.Active - data.ActiveYesterday) + (data.Deceased - data.DeceasedYesterday) + (data.Recovered - data.RecoveredYesterday));
     $("#cases_deaths_today").html(data.Deceased - data.DeceasedYesterday);
     $("#cases_recovered_today").html(data.Recovered - data.RecoveredYesterday);
+    $("#patientstats_updated").html(data.Updated)
+})
+    
+    
 
 
 }
 
 function loadNews(data) {
-    let $container = $("#news-container")
+    let $container = $("#twitterfeed-container")
     for(let item of data){
-        let div = $("<div class='column'></div>")[0]
+        let div = $("<div></div>")[0]
         twttr.widgets.createTweet(item["url"].split("/").slice(-1)[0], div, {
-            width: 220
+            width: $container.width()
         })
         $container.append(div)
     }
+    let speed = 1;
+    let hoverFlag = false;
+    $container.hover(()=>{
+        hoverFlag =true;
+    },()=>{
+        hoverFlag = false;
+    })
+    setInterval(()=>{
+
+        if(!hoverFlag){
+            $container[0].scrollTop += speed;
+            if($container[0].scrollTop === $container[0].scrollHeight - $container[0].offsetHeight){
+                $container[0].scrollTop =0
+            }
+            // $container[0].scroll(0,$container[0].scrollTop)
+        }
+    },30)
 }
 
 function loadMap() {
@@ -213,41 +288,9 @@ function loadSparklines(data) {
             "element":"#slDeceased"
         },
     }
-    const baseOptions = {
-        chart: {
-            type: 'line',
-            // width: 100,
-            height: 35,
-            sparkline: {
-                enabled: true
-            }
-        },
-        stroke:{
-            curve:"stepline",
-            lineCap: "round",
-            width: 3
-        },
-        tooltip: {
-            fixed: {
-                enabled: false
-            },
-            x: {
-                show: false
-            },
-            y: {
-                title: {
-                    formatter: function (seriesName) {
-                        return ''
-                    }
-                }
-            },
-            marker: {
-                show: false
-            }
-        }
-    };
+    
     for(let value of Object.values(config)){
-        let options = baseOptions;
+        let options = slBaseOptions;
         options["series"] = [
             {
                 data: value["data"]
@@ -259,6 +302,40 @@ function loadSparklines(data) {
 
 }
 
+function loadSamplesData(data){
+    $("#stats_date").html(data["date"])
+    $("#stats_samples").html(data["stats"]["total"])
+    $("#stats_posper").html(data["stats"]["posper"].toFixed(2))
+    $("#stats_negper").html(data["stats"]["negper"].toFixed(2))
+    const config = {
+        "total" : {
+            "color":"#250339",
+            "data":data["variance"]["total"],
+            "element":"#slSamples"
+        },
+        "posper":{
+            "color":"#FF073A",
+            "data":data["variance"]["posper"],
+            "element":"#slPositivePercentage"
+        },
+        "negper":{
+            "color":"#28a745",
+            "data":data["variance"]["negper"],
+            "element":"#slNegativePercentage"
+        },
+    }
+    for(let value of Object.values(config)){
+        let options = slBaseOptions;
+        options["series"] = [
+            {
+                data: value["data"]
+            }
+        ]
+        options["colors"]=[value["color"]]
+        new ApexCharts($(value["element"])[0],options).render();
+    }
+
+}
 function loadChart() {
     
     chartOptions = {
@@ -314,6 +391,16 @@ function loadChart() {
     };
     let chart = new ApexCharts(document.querySelector("#chart1"), chartOptions);
     chart.render();
+}
+
+function loadExtraData(arr){
+    $("#indActive").html(arr[0]["active"])
+    $("#indRecovered").html(arr[0]["recovered"])
+    $("#indDead").html(arr[0]["deaths"])
+    $("#indTotal").html(arr[0]["total"])
+    $("#wTotal").html(arr[1]["total"])
+    $("#wDead").html(arr[1]["deaths"])
+    $("#wRecovered").html(arr[1]["recovered"])
 }
 
 function selectMapDistrict(dShape) {
