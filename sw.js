@@ -24,6 +24,17 @@ workbox.routing.registerRoute(
   })
 )
 workbox.routing.registerRoute(
+  /api\/news/,
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'newsfeed',
+    plugins:[
+      new workbox.expiration.ExpirationPlugin({
+        purgeOnQuotaError:true,
+      })
+    ]
+  })
+)
+workbox.routing.registerRoute(
   /api\/live/,
   new workbox.strategies.NetworkOnly()
 )
@@ -31,7 +42,10 @@ workbox.routing.registerRoute(
   /api/,
   new workbox.strategies.NetworkFirst()
 )
-
+workbox.routing.registerRoute(
+  /api\/live/,
+  new workbox.strategies.NetworkOnly()
+)
 var version = "v2.0.2";
 var swPath;
 var urlObject = new URL(location);
