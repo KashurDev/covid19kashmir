@@ -4,6 +4,7 @@ const NEWS_API_URL = "https://covidkashmir.org/api/news/"
 const BULLETIN_API_URL = "https://covidkashmir.org/api/bulletin/"
 
 let patientData, districtsMap, snap, countback;
+let deferredPrompt;
 let tableLimit =50, tablePage =1;
 const DISTRICTS = ["Baramulla", "Ganderbal", "Bandipora", "Srinagar", "Anantnag", "Budgam", "Doda", "Jammu", "Kathua", "Kishtwar", "Kulgam", "Kupwara", "Pulwama", "Poonch", "Rajouri", "Ramban", "Riasi", "Samba", "Shopian", "Udhampur", "Mirpur", "Muzaffarabad"]
 const COLORS = {
@@ -555,7 +556,8 @@ function getFillColor(district) {
     let activeDistrictsMap = {}
     for(let k of Object.keys(districtsMap)){
         activeDistrictsMap[k] = districtsMap[k]["Active"]
-    }    if (!Object.keys(activeDistrictsMap).includes(district)) return "#ffffff"
+    }
+    if (!Object.keys(activeDistrictsMap).includes(district) || districtsMap[district]["Active"]==='0') return "#ffffff"
     let min = Math.min(...Object.values(activeDistrictsMap))
     let max = Math.max(...Object.values(activeDistrictsMap))
     let range = (max - min) / 3
@@ -604,4 +606,14 @@ function matchesFilters(patient) {
         if (patient[key] !== FILTERS[key]) return false;
     }
     return true;
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    $("#buttonDownload").removeClass("is-hidden")
+});
+function downloadApplication(){
+    $("#buttonDownload").addClass("is-hidden")
+    deferredPrompt.prompt();
 }
